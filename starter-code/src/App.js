@@ -98,7 +98,7 @@ class App extends Component {
         </div>
         <AddFood addTheFood={this.addFoodHandler} />
         <div className="columns">
-          <div className="column is-two-thirds">
+          <div className="column is-three-fifths">
             {this.state.list.filter((el) => el.name.includes(titleize(input))).map((el, idx) => (
               <FoodBox
                 key={idx}
