@@ -3,10 +3,21 @@ import React, { Component } from "react";
 class FoodBox extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            quantity: this.props.quantity
+        }
     }
 
+    inputHandler(e) {
+        const { name, value } = e.target;
+        this.setState({
+          [name]: value
+        });
+      }
+
     render() {
-        const { name, calories, image, quantify } = this.props;
+        const { name, calories, image, add } = this.props;
+        const { quantity } = this.state;
 
         return (
             <div className="box">
@@ -27,10 +38,10 @@ class FoodBox extends Component {
                     <div className="media-right">
                         <div className="field has-addons">
                             <div className="control">
-                                <input className="input" type="number" defaultValue="{quantify}" />
+                            <input type="number" className="input" name="quantity" value={quantity} onChange={e => this.inputHandler(e)} />
                             </div>
                             <div className="control">
-                                <button className="button is-info">+</button>
+                                <button className="button is-info" onClick={() => add({ quantity, name, calories })}>+</button>
                             </div>
                         </div>
                     </div>

@@ -32,7 +32,7 @@ class AddFood extends Component {
             this.setState({
                 name: '',
                 calories: '',
-                image: ''
+                image: '',
             })
         }
     }

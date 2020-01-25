@@ -12,8 +12,10 @@ class App extends Component {
     super(props)
     this.state = {
       list: this.getData(),
-      name: ''
+      name: '',
+      items: []
     }
+    this.addFoodItem = this.addFoodItem.bind(this);
   }
 
   getData() {
@@ -29,13 +31,40 @@ class App extends Component {
     })
   }
 
-  handleChange(event) {
+  searchHandleChange(event) {
     let { name, value } = event.target;
     this.setState({ [name]: value })
   }
 
+  addFoodItem(value) {
+    const items = [...this.state.items];
+    const hasItem = items.some(el => el.name === value.name);
+    if (!hasItem) {
+      items.push(value);
+      console.log(items[0].quantity - 1)
+    } else {
+      for (let idx = 0; idx < items.length; idx += 1) {
+        if (items[idx].name === value.name) {
+          items[idx].quantity += value.quantity;
+          break;
+        }
+      }
+    }
+
+    this.setState({ items });
+  }
+
+  removeItem(index) {
+    const items = [...this.state.items];
+    items[index].quantity -= 1
+    if (items[index].quantity === 0) {
+      items.splice(index, 1);
+    }
+    this.setState({ items });
+  }
 
   render() {
+    const { items } = this.state;
 
     let input = this.state.name
 
@@ -63,21 +92,41 @@ class App extends Component {
           <div className="field">
             <label className="label">Search:</label>
             <div className="control">
-              <input className="input" type="text" name="name" value={this.state.name} onChange={(e) => this.handleChange(e)} />
+              <input className="input" type="text" name="name" value={this.state.name} onChange={(e) => this.searchHandleChange(e)} />
             </div>
           </div>
         </div>
         <AddFood addTheFood={this.addFoodHandler} />
-        {}
-        {this.state.list.filter((el) => el.name.includes(titleize(input))).map((el, idx) => (
-          <FoodBox
-            key={idx}
-            name={el.name}
-            calories={el.calories}
-            image={el.image}
-            quantify={() => el.quantify}
-          />
-        ))}
+        <div className="columns">
+          <div className="column is-two-thirds">
+            {this.state.list.filter((el) => el.name.includes(titleize(input))).map((el, idx) => (
+              <FoodBox
+                key={idx}
+                name={el.name}
+                calories={el.calories}
+                image={el.image}
+                quantity={el.quantity + 1}
+                add={this.addFoodItem}
+              />
+            ))}
+          </div>
+          <div className="column">
+            <div className="column content">
+              <h2 className="subtitle">Today's foods</h2>
+              <ul>
+                {items.map((item, idx) => (
+                  <li key={idx}>
+                    {item.quantity} {item.name} = {item.calories * item.quantity} cal&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <button className="button is-danger is-small is-outlined" onClick={() => this.removeItem(idx)}>
+                      Remove
+                  </button>
+                  </li>
+                ))}
+              </ul>
+              <strong>Total: {items.reduce((acc, item) => (acc += item.calories * item.quantity), 0)} cal</strong>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
